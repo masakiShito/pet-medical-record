@@ -1,18 +1,26 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getPet, createPet, updatePet } from '../utils/api';
-import { toISODate } from '../utils/dateFormatter';
 import Input from '../components/Input';
 import Select from '../components/Select';
 import Textarea from '../components/Textarea';
 import Button from '../components/Button';
 
+interface PetFormData {
+  name: string;
+  species: 'dog' | 'cat' | 'other';
+  breed: string;
+  sex: 'unknown' | 'male' | 'female';
+  birthday: string;
+  notes: string;
+}
+
 export default function PetFormPage() {
-  const { petId } = useParams();
+  const { petId } = useParams<{ petId: string }>();
   const navigate = useNavigate();
   const isEdit = Boolean(petId);
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<PetFormData>({
     name: '',
     species: 'dog',
     breed: '',
@@ -22,18 +30,20 @@ export default function PetFormPage() {
   });
 
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (isEdit) {
+    if (isEdit && petId) {
       loadPet();
     }
   }, [petId]);
 
   const loadPet = async () => {
+    if (!petId) return;
+
     try {
       setLoading(true);
-      const data = await getPet(petId);
+      const data = await getPet(Number(petId));
       setFormData({
         name: data.name || '',
         species: data.species || 'dog',
@@ -43,18 +53,18 @@ export default function PetFormPage() {
         notes: data.notes || '',
       });
     } catch (err) {
-      setError(err.message);
+      setError((err as Error).message);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleChange = (e) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
 
@@ -63,20 +73,20 @@ export default function PetFormPage() {
 
       const submitData = {
         ...formData,
-        breed: formData.breed || null,
-        birthday: formData.birthday || null,
-        notes: formData.notes || null,
+        breed: formData.breed || undefined,
+        birthday: formData.birthday || undefined,
+        notes: formData.notes || undefined,
       };
 
-      if (isEdit) {
-        await updatePet(petId, submitData);
+      if (isEdit && petId) {
+        await updatePet(Number(petId), submitData);
       } else {
         await createPet(submitData);
       }
 
       navigate('/pets');
     } catch (err) {
-      setError(err.message);
+      setError((err as Error).message);
     } finally {
       setLoading(false);
     }

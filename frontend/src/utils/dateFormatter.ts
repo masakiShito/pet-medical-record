@@ -1,4 +1,4 @@
-export function formatDate(dateString) {
+export function formatDate(dateString: string | null | undefined): string {
   if (!dateString) return '';
   const date = new Date(dateString);
   return date.toLocaleDateString('ja-JP', {
@@ -8,7 +8,7 @@ export function formatDate(dateString) {
   });
 }
 
-export function formatDateTime(dateTimeString) {
+export function formatDateTime(dateTimeString: string | null | undefined): string {
   if (!dateTimeString) return '';
   const date = new Date(dateTimeString);
   return date.toLocaleString('ja-JP', {
@@ -20,14 +20,14 @@ export function formatDateTime(dateTimeString) {
   });
 }
 
-export function toISODate(date) {
+export function toISODate(date: string | Date | null | undefined): string {
   if (!date) return '';
   if (typeof date === 'string') return date;
   const d = new Date(date);
   return d.toISOString().split('T')[0];
 }
 
-export function toISODateTime(date) {
+export function toISODateTime(date: string | Date | null | undefined): string {
   if (!date) return '';
   if (typeof date === 'string') return date;
   return new Date(date).toISOString();

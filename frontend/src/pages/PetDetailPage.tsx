@@ -1,34 +1,36 @@
 import { useState, useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
-import { getPet, getRecords } from '../utils/api';
+import { getPet, getRecords, Pet, Record } from '../utils/api';
 import { formatDate } from '../utils/dateFormatter';
 import Button from '../components/Button';
 
 export default function PetDetailPage() {
-  const { petId } = useParams();
+  const { petId } = useParams<{ petId: string }>();
   const navigate = useNavigate();
 
-  const [pet, setPet] = useState(null);
-  const [records, setRecords] = useState([]);
+  const [pet, setPet] = useState<Pet | null>(null);
+  const [records, setRecords] = useState<Record[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     loadData();
   }, [petId]);
 
   const loadData = async () => {
+    if (!petId) return;
+
     try {
       setLoading(true);
       const [petData, recordsData] = await Promise.all([
-        getPet(petId),
-        getRecords(petId, { limit: 100 }),
+        getPet(Number(petId)),
+        getRecords(Number(petId), { limit: 100 } as any),
       ]);
 
       setPet(petData);
       setRecords(recordsData.items || []);
     } catch (err) {
-      setError(err.message);
+      setError((err as Error).message);
     } finally {
       setLoading(false);
     }

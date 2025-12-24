@@ -1,14 +1,18 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { getPets, getRecords } from '../utils/api';
+import { getPets, getRecords, Pet, Record } from '../utils/api';
 import { formatDate } from '../utils/dateFormatter';
 import Button from '../components/Button';
 
+interface RecordsByPet {
+  [petId: number]: Record[];
+}
+
 export default function HomePage() {
-  const [pets, setPets] = useState([]);
-  const [recentRecords, setRecentRecords] = useState({});
+  const [pets, setPets] = useState<Pet[]>([]);
+  const [recentRecords, setRecentRecords] = useState<RecordsByPet>({});
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     loadHomeData();
@@ -21,10 +25,10 @@ export default function HomePage() {
       setPets(petsData.items || []);
 
       // Load recent records for each pet
-      const recordsData = {};
+      const recordsData: RecordsByPet = {};
       for (const pet of petsData.items || []) {
         try {
-          const records = await getRecords(pet.id, { limit: 3 });
+          const records = await getRecords(pet.id, { limit: 3 } as any);
           recordsData[pet.id] = records.items || [];
         } catch (err) {
           console.error(`Error loading records for pet ${pet.id}:`, err);
@@ -33,7 +37,7 @@ export default function HomePage() {
       }
       setRecentRecords(recordsData);
     } catch (err) {
-      setError(err.message);
+      setError((err as Error).message);
     } finally {
       setLoading(false);
     }

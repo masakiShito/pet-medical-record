@@ -1,13 +1,26 @@
-export default function Textarea({
+import { ChangeEvent } from 'react';
+
+interface InputProps {
+  label?: string;
+  name: string;
+  type?: string;
+  value: string | number;
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  required?: boolean;
+  placeholder?: string;
+  error?: string | null;
+}
+
+export default function Input({
   label,
   name,
+  type = 'text',
   value,
   onChange,
   required = false,
   placeholder = '',
-  rows = 4,
   error = null
-}) {
+}: InputProps) {
   return (
     <div className="mb-4">
       {label && (
@@ -16,14 +29,14 @@ export default function Textarea({
           {required && <span className="text-red-500 ml-1">*</span>}
         </label>
       )}
-      <textarea
+      <input
         id={name}
         name={name}
+        type={type}
         value={value}
         onChange={onChange}
         required={required}
         placeholder={placeholder}
-        rows={rows}
         className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${
           error ? 'border-red-500' : 'border-gray-300'
         }`}

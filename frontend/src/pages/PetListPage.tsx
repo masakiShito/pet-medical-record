@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { getPets } from '../utils/api';
+import { getPets, Pet } from '../utils/api';
 import { formatDate } from '../utils/dateFormatter';
 import Button from '../components/Button';
 
 export default function PetListPage() {
-  const [pets, setPets] = useState([]);
+  const [pets, setPets] = useState<Pet[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     loadPets();
@@ -19,7 +19,7 @@ export default function PetListPage() {
       const data = await getPets();
       setPets(data.items || []);
     } catch (err) {
-      setError(err.message);
+      setError((err as Error).message);
     } finally {
       setLoading(false);
     }

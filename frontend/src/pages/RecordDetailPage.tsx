@@ -1,28 +1,30 @@
 import { useState, useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
-import { getRecord } from '../utils/api';
+import { getRecord, Record } from '../utils/api';
 import { formatDate, formatDateTime } from '../utils/dateFormatter';
 import Button from '../components/Button';
 
 export default function RecordDetailPage() {
-  const { petId, recordId } = useParams();
+  const { petId, recordId } = useParams<{ petId: string; recordId: string }>();
   const navigate = useNavigate();
 
-  const [record, setRecord] = useState(null);
+  const [record, setRecord] = useState<Record | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     loadRecord();
   }, [petId, recordId]);
 
   const loadRecord = async () => {
+    if (!petId || !recordId) return;
+
     try {
       setLoading(true);
-      const data = await getRecord(petId, recordId);
+      const data = await getRecord(Number(petId), Number(recordId));
       setRecord(data);
     } catch (err) {
-      setError(err.message);
+      setError((err as Error).message);
     } finally {
       setLoading(false);
     }
@@ -234,8 +236,8 @@ export default function RecordDetailPage() {
       )}
 
       <div className="text-center text-sm text-gray-500">
-        <p>作成: {formatDateTime(record.created_at)}</p>
-        <p>更新: {formatDateTime(record.updated_at)}</p>
+        {record.created_at && <p>作成: {formatDateTime(record.created_at)}</p>}
+        {record.updated_at && <p>更新: {formatDateTime(record.updated_at)}</p>}
       </div>
     </div>
   );

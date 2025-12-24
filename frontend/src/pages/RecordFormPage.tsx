@@ -1,19 +1,31 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getRecord, createRecord, updateRecord, deleteRecord } from '../utils/api';
+import { getRecord, createRecord, updateRecord, deleteRecord, Weight, Medication, VetVisit } from '../utils/api';
 import Input from '../components/Input';
 import Select from '../components/Select';
 import Textarea from '../components/Textarea';
 import Button from '../components/Button';
 
+interface RecordFormData {
+  recorded_on: string;
+  title: string;
+  condition_level: string;
+  appetite_level: string;
+  stool_level: string;
+  memo: string;
+  weights: Weight[];
+  medications: Medication[];
+  vet_visits: VetVisit[];
+}
+
 export default function RecordFormPage() {
-  const { petId, recordId } = useParams();
+  const { petId, recordId } = useParams<{ petId: string; recordId: string }>();
   const navigate = useNavigate();
   const isEdit = Boolean(recordId);
 
   const today = new Date().toISOString().split('T')[0];
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<RecordFormData>({
     recorded_on: today,
     title: '',
     condition_level: '',
@@ -26,37 +38,39 @@ export default function RecordFormPage() {
   });
 
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (isEdit) {
+    if (isEdit && petId && recordId) {
       loadRecord();
     }
   }, [recordId]);
 
   const loadRecord = async () => {
+    if (!petId || !recordId) return;
+
     try {
       setLoading(true);
-      const data = await getRecord(petId, recordId);
+      const data = await getRecord(Number(petId), Number(recordId));
       setFormData({
         recorded_on: data.recorded_on || today,
         title: data.title || '',
-        condition_level: data.condition_level || '',
-        appetite_level: data.appetite_level || '',
-        stool_level: data.stool_level || '',
+        condition_level: data.condition_level?.toString() || '',
+        appetite_level: data.appetite_level?.toString() || '',
+        stool_level: data.stool_level?.toString() || '',
         memo: data.memo || '',
         weights: data.weights || [],
         medications: data.medications || [],
         vet_visits: data.vet_visits || [],
       });
     } catch (err) {
-      setError(err.message);
+      setError((err as Error).message);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleChange = (e) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
@@ -65,11 +79,11 @@ export default function RecordFormPage() {
   const addWeight = () => {
     setFormData((prev) => ({
       ...prev,
-      weights: [...prev.weights, { weight_kg: '', measured_at: '', note: '' }],
+      weights: [...prev.weights, { weight_kg: 0, measured_at: '', note: '' }],
     }));
   };
 
-  const updateWeight = (index, field, value) => {
+  const updateWeight = (index: number, field: keyof Weight, value: string | number) => {
     setFormData((prev) => {
       const newWeights = [...prev.weights];
       newWeights[index] = { ...newWeights[index], [field]: value };
@@ -77,7 +91,7 @@ export default function RecordFormPage() {
     });
   };
 
-  const removeWeight = (index) => {
+  const removeWeight = (index: number) => {
     setFormData((prev) => ({
       ...prev,
       weights: prev.weights.filter((_, i) => i !== index),
@@ -95,7 +109,7 @@ export default function RecordFormPage() {
     }));
   };
 
-  const updateMedication = (index, field, value) => {
+  const updateMedication = (index: number, field: keyof Medication, value: string) => {
     setFormData((prev) => {
       const newMedications = [...prev.medications];
       newMedications[index] = { ...newMedications[index], [field]: value };
@@ -103,7 +117,7 @@ export default function RecordFormPage() {
     });
   };
 
-  const removeMedication = (index) => {
+  const removeMedication = (index: number) => {
     setFormData((prev) => ({
       ...prev,
       medications: prev.medications.filter((_, i) => i !== index),
@@ -116,12 +130,12 @@ export default function RecordFormPage() {
       ...prev,
       vet_visits: [
         ...prev.vet_visits,
-        { hospital_name: '', doctor: '', reason: '', diagnosis: '', cost_yen: '', note: '' },
+        { hospital_name: '', doctor: '', reason: '', diagnosis: '', cost_yen: undefined, note: '' },
       ],
     }));
   };
 
-  const updateVetVisit = (index, field, value) => {
+  const updateVetVisit = (index: number, field: keyof VetVisit, value: string | number) => {
     setFormData((prev) => {
       const newVetVisits = [...prev.vet_visits];
       newVetVisits[index] = { ...newVetVisits[index], [field]: value };
@@ -129,15 +143,17 @@ export default function RecordFormPage() {
     });
   };
 
-  const removeVetVisit = (index) => {
+  const removeVetVisit = (index: number) => {
     setFormData((prev) => ({
       ...prev,
       vet_visits: prev.vet_visits.filter((_, i) => i !== index),
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    if (!petId) return;
+
     setError(null);
 
     try {
@@ -145,62 +161,63 @@ export default function RecordFormPage() {
 
       const submitData = {
         recorded_on: formData.recorded_on,
-        title: formData.title || null,
-        condition_level: formData.condition_level ? Number(formData.condition_level) : null,
-        appetite_level: formData.appetite_level ? Number(formData.appetite_level) : null,
-        stool_level: formData.stool_level ? Number(formData.stool_level) : null,
-        memo: formData.memo || null,
+        title: formData.title || undefined,
+        condition_level: formData.condition_level ? Number(formData.condition_level) : undefined,
+        appetite_level: formData.appetite_level ? Number(formData.appetite_level) : undefined,
+        stool_level: formData.stool_level ? Number(formData.stool_level) : undefined,
+        memo: formData.memo || undefined,
         weights: formData.weights.map((w) => ({
           id: w.id,
           weight_kg: Number(w.weight_kg),
-          measured_at: w.measured_at || null,
-          note: w.note || null,
+          measured_at: w.measured_at || undefined,
+          note: w.note || undefined,
         })),
         medications: formData.medications.map((m) => ({
           id: m.id,
           name: m.name,
-          dosage: m.dosage || null,
-          frequency: m.frequency || null,
-          started_on: m.started_on || null,
-          ended_on: m.ended_on || null,
-          note: m.note || null,
+          dosage: m.dosage || undefined,
+          frequency: m.frequency || undefined,
+          started_on: m.started_on || undefined,
+          ended_on: m.ended_on || undefined,
+          note: m.note || undefined,
         })),
         vet_visits: formData.vet_visits.map((v) => ({
           id: v.id,
-          hospital_name: v.hospital_name || null,
-          doctor: v.doctor || null,
-          reason: v.reason || null,
-          diagnosis: v.diagnosis || null,
-          cost_yen: v.cost_yen ? Number(v.cost_yen) : null,
-          note: v.note || null,
+          hospital_name: v.hospital_name || undefined,
+          doctor: v.doctor || undefined,
+          reason: v.reason || undefined,
+          diagnosis: v.diagnosis || undefined,
+          cost_yen: v.cost_yen ? Number(v.cost_yen) : undefined,
+          note: v.note || undefined,
         })),
       };
 
-      if (isEdit) {
-        await updateRecord(petId, recordId, submitData);
+      if (isEdit && recordId) {
+        await updateRecord(Number(petId), Number(recordId), submitData);
       } else {
-        await createRecord(petId, submitData);
+        await createRecord(Number(petId), submitData);
       }
 
       navigate(`/pets/${petId}`);
     } catch (err) {
-      setError(err.message);
+      setError((err as Error).message);
     } finally {
       setLoading(false);
     }
   };
 
   const handleDelete = async () => {
+    if (!petId || !recordId) return;
     if (!window.confirm('この記録を削除してもよろしいですか?')) {
       return;
     }
 
     try {
       setLoading(true);
-      await deleteRecord(petId, recordId);
+      await deleteRecord(Number(petId), Number(recordId));
       navigate(`/pets/${petId}`);
     } catch (err) {
-      setError(err.message);
+      setError((err as Error).message);
       setLoading(false);
     }
   };
@@ -316,21 +333,23 @@ export default function RecordFormPage() {
                 <Input
                   label="体重 (kg)"
                   type="number"
-                  step="0.01"
-                  value={weight.weight_kg}
+                  name="weight_kg"
+                  value={weight.weight_kg || ''}
                   onChange={(e) => updateWeight(index, 'weight_kg', e.target.value)}
                   required
                 />
                 <Input
                   label="測定日時"
                   type="datetime-local"
-                  value={weight.measured_at}
+                  name="measured_at"
+                  value={weight.measured_at || ''}
                   onChange={(e) => updateWeight(index, 'measured_at', e.target.value)}
                 />
               </div>
               <Input
                 label="メモ"
-                value={weight.note}
+                name="note"
+                value={weight.note || ''}
                 onChange={(e) => updateWeight(index, 'note', e.target.value)}
               />
               <Button
@@ -358,6 +377,7 @@ export default function RecordFormPage() {
             <div key={index} className="border-t pt-4 mt-4 first:border-t-0 first:mt-0">
               <Input
                 label="薬名"
+                name="name"
                 value={med.name}
                 onChange={(e) => updateMedication(index, 'name', e.target.value)}
                 required
@@ -365,12 +385,14 @@ export default function RecordFormPage() {
               <div className="grid grid-cols-2 gap-4">
                 <Input
                   label="用量"
-                  value={med.dosage}
+                  name="dosage"
+                  value={med.dosage || ''}
                   onChange={(e) => updateMedication(index, 'dosage', e.target.value)}
                 />
                 <Input
                   label="頻度"
-                  value={med.frequency}
+                  name="frequency"
+                  value={med.frequency || ''}
                   onChange={(e) => updateMedication(index, 'frequency', e.target.value)}
                 />
               </div>
@@ -378,19 +400,22 @@ export default function RecordFormPage() {
                 <Input
                   label="開始日"
                   type="date"
-                  value={med.started_on}
+                  name="started_on"
+                  value={med.started_on || ''}
                   onChange={(e) => updateMedication(index, 'started_on', e.target.value)}
                 />
                 <Input
                   label="終了日"
                   type="date"
-                  value={med.ended_on}
+                  name="ended_on"
+                  value={med.ended_on || ''}
                   onChange={(e) => updateMedication(index, 'ended_on', e.target.value)}
                 />
               </div>
               <Input
                 label="メモ"
-                value={med.note}
+                name="note"
+                value={med.note || ''}
                 onChange={(e) => updateMedication(index, 'note', e.target.value)}
               />
               <Button
@@ -419,34 +444,40 @@ export default function RecordFormPage() {
               <div className="grid grid-cols-2 gap-4">
                 <Input
                   label="病院名"
-                  value={visit.hospital_name}
+                  name="hospital_name"
+                  value={visit.hospital_name || ''}
                   onChange={(e) => updateVetVisit(index, 'hospital_name', e.target.value)}
                 />
                 <Input
                   label="獣医師名"
-                  value={visit.doctor}
+                  name="doctor"
+                  value={visit.doctor || ''}
                   onChange={(e) => updateVetVisit(index, 'doctor', e.target.value)}
                 />
               </div>
               <Input
                 label="受診理由"
-                value={visit.reason}
+                name="reason"
+                value={visit.reason || ''}
                 onChange={(e) => updateVetVisit(index, 'reason', e.target.value)}
               />
               <Input
                 label="診断結果"
-                value={visit.diagnosis}
+                name="diagnosis"
+                value={visit.diagnosis || ''}
                 onChange={(e) => updateVetVisit(index, 'diagnosis', e.target.value)}
               />
               <Input
                 label="費用 (円)"
                 type="number"
-                value={visit.cost_yen}
+                name="cost_yen"
+                value={visit.cost_yen || ''}
                 onChange={(e) => updateVetVisit(index, 'cost_yen', e.target.value)}
               />
               <Textarea
                 label="メモ"
-                value={visit.note}
+                name="note"
+                value={visit.note || ''}
                 onChange={(e) => updateVetVisit(index, 'note', e.target.value)}
               />
               <Button

@@ -1,9 +1,14 @@
+import { ReactNode } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
-export default function Layout({ children }) {
+interface LayoutProps {
+  children: ReactNode;
+}
+
+export default function Layout({ children }: LayoutProps) {
   const location = useLocation();
 
-  const isActive = (path) => location.pathname === path;
+  const isActive = (path: string): boolean => location.pathname === path;
 
   return (
     <div className="min-h-screen bg-gray-50">

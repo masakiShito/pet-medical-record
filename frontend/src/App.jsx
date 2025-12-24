@@ -1,81 +1,29 @@
-import { useEffect, useState } from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Layout from './components/Layout';
+import HomePage from './pages/HomePage';
+import PetListPage from './pages/PetListPage';
+import PetFormPage from './pages/PetFormPage';
+import PetDetailPage from './pages/PetDetailPage';
+import RecordFormPage from './pages/RecordFormPage';
+import RecordDetailPage from './pages/RecordDetailPage';
 
-const API_URL = 'http://localhost:8000';
-
-export default function App() {
-  const [apiStatus, setApiStatus] = useState('checking');
-  const [dbStatus, setDbStatus] = useState('checking');
-  // capture detail returned from /db/health
-  const [dbDetail, setDbDetail] = useState(null);
-
-  useEffect(() => {
-    let isMounted = true;
-    let dbTimeoutId;
-
-    const checkApiHealth = async () => {
-      try {
-        const response = await fetch(`${API_URL}/health`);
-        const data = await response.json();
-        if (isMounted) {
-          setApiStatus(data.status ?? 'unknown');
-        }
-      } catch {
-        if (isMounted) {
-          setApiStatus('error');
-        }
-      }
-    };
-
-    const checkDbHealth = async () => {
-      try {
-        const response = await fetch(`${API_URL}/db/health`);
-        const data = await response.json();
-        const status = data.status ?? 'unknown';
-        const detail = data.detail ?? null;
-        if (isMounted) {
-          setDbStatus(status);
-          // show detail only when not ok
-          setDbDetail(status === 'ok' ? null : detail);
-        }
-        return status;
-      } catch {
-        if (isMounted) {
-          setDbStatus('error');
-          setDbDetail('network error');
-        }
-        return 'error';
-      }
-    };
-
-    const pollDbHealth = async () => {
-      const status = await checkDbHealth();
-      if (status !== 'ok' && isMounted) {
-        dbTimeoutId = setTimeout(pollDbHealth, 2000);
-      }
-    };
-
-    checkApiHealth();
-    pollDbHealth();
-
-    return () => {
-      isMounted = false;
-      if (dbTimeoutId) {
-        clearTimeout(dbTimeoutId);
-      }
-    };
-  }, []);
-
+function App() {
   return (
-    <main style={{ fontFamily: 'sans-serif', padding: '2rem' }}>
-      <h1>Pet Medical Record</h1>
-      <p>React + FastAPI + MySQL 開発環境</p>
-      <ul>
-        <li>API Health: {apiStatus}</li>
-        <li>
-          DB Health: {dbStatus}
-          {dbDetail ? ` - ${dbDetail}` : null}
-        </li>
-      </ul>
-    </main>
+    <BrowserRouter>
+      <Layout>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/pets" element={<PetListPage />} />
+          <Route path="/pets/new" element={<PetFormPage />} />
+          <Route path="/pets/:petId" element={<PetDetailPage />} />
+          <Route path="/pets/:petId/edit" element={<PetFormPage />} />
+          <Route path="/pets/:petId/records/new" element={<RecordFormPage />} />
+          <Route path="/pets/:petId/records/:recordId" element={<RecordDetailPage />} />
+          <Route path="/pets/:petId/records/:recordId/edit" element={<RecordFormPage />} />
+        </Routes>
+      </Layout>
+    </BrowserRouter>
   );
 }
+
+export default App;

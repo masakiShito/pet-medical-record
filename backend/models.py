@@ -3,7 +3,6 @@ from sqlalchemy import (
     Column,
     BigInteger,
     String,
-    Enum,
     Date,
     DateTime,
     Text,
@@ -14,21 +13,8 @@ from sqlalchemy import (
 )
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
-import enum
 
 Base = declarative_base()
-
-
-class SpeciesEnum(str, enum.Enum):
-    dog = "dog"
-    cat = "cat"
-    other = "other"
-
-
-class SexEnum(str, enum.Enum):
-    male = "male"
-    female = "female"
-    unknown = "unknown"
 
 
 class User(Base):
@@ -49,13 +35,13 @@ class Pet(Base):
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     user_id = Column(BigInteger, ForeignKey("users.id"), nullable=False)
-    name = Column(String(50), nullable=False)
-    species = Column(Enum(SpeciesEnum), nullable=False)
-    breed = Column(String(50), nullable=True)
-    sex = Column(Enum(SexEnum), nullable=True)
-    birthday = Column(Date, nullable=True)
-    notes = Column(Text, nullable=True)
+    name = Column(String(100), nullable=False)
+    species = Column(String(50), nullable=True)
+    sex = Column(String(20), nullable=True)
+    birth_date = Column(Date, nullable=True)
+    photo_url = Column(String(500), nullable=True)
     is_deleted = Column(SmallInteger, nullable=False, default=0)
+    deleted_at = Column(DateTime, nullable=True)
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
     updated_at = Column(
         DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow
@@ -71,12 +57,10 @@ class Record(Base):
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     pet_id = Column(BigInteger, ForeignKey("pets.id"), nullable=False)
     recorded_on = Column(Date, nullable=False)
-    title = Column(String(100), nullable=True)
-    condition_level = Column(SmallInteger, nullable=True)
-    appetite_level = Column(SmallInteger, nullable=True)
-    stool_level = Column(SmallInteger, nullable=True)
-    memo = Column(Text, nullable=True)
+    condition = Column(String(20), nullable=True)
+    note = Column(Text, nullable=True)
     is_deleted = Column(SmallInteger, nullable=False, default=0)
+    deleted_at = Column(DateTime, nullable=True)
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
     updated_at = Column(
         DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow
@@ -93,9 +77,11 @@ class RecordWeight(Base):
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     record_id = Column(BigInteger, ForeignKey("records.id"), nullable=False)
+    measured_on = Column(Date, nullable=False)
     weight_kg = Column(DECIMAL(5, 2), nullable=False)
-    measured_at = Column(DateTime, nullable=True)
-    note = Column(String(200), nullable=True)
+    note = Column(String(500), nullable=True)
+    is_deleted = Column(SmallInteger, nullable=False, default=0)
+    deleted_at = Column(DateTime, nullable=True)
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
     updated_at = Column(
         DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow
@@ -109,12 +95,14 @@ class RecordMedication(Base):
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     record_id = Column(BigInteger, ForeignKey("records.id"), nullable=False)
-    name = Column(String(100), nullable=False)
-    dosage = Column(String(100), nullable=True)
-    frequency = Column(String(100), nullable=True)
-    started_on = Column(Date, nullable=True)
-    ended_on = Column(Date, nullable=True)
-    note = Column(String(200), nullable=True)
+    name = Column(String(200), nullable=False)
+    dosage = Column(String(200), nullable=True)
+    frequency = Column(String(200), nullable=True)
+    start_on = Column(Date, nullable=False)
+    end_on = Column(Date, nullable=True)
+    note = Column(Text, nullable=True)
+    is_deleted = Column(SmallInteger, nullable=False, default=0)
+    deleted_at = Column(DateTime, nullable=True)
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
     updated_at = Column(
         DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow
@@ -128,12 +116,15 @@ class RecordVetVisit(Base):
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     record_id = Column(BigInteger, ForeignKey("records.id"), nullable=False)
-    hospital_name = Column(String(100), nullable=True)
-    doctor = Column(String(50), nullable=True)
-    reason = Column(String(200), nullable=True)
-    diagnosis = Column(String(200), nullable=True)
+    visited_on = Column(Date, nullable=False)
+    hospital_name = Column(String(200), nullable=True)
+    doctor_name = Column(String(200), nullable=True)
+    chief_complaint = Column(String(500), nullable=True)
+    diagnosis = Column(String(500), nullable=True)
     cost_yen = Column(Integer, nullable=True)
     note = Column(Text, nullable=True)
+    is_deleted = Column(SmallInteger, nullable=False, default=0)
+    deleted_at = Column(DateTime, nullable=True)
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
     updated_at = Column(
         DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow

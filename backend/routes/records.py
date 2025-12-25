@@ -47,10 +47,7 @@ def get_records(
                 id=record.id,
                 pet_id=record.pet_id,
                 recorded_on=record.recorded_on,
-                title=record.title,
-                condition_level=record.condition_level,
-                appetite_level=record.appetite_level,
-                stool_level=record.stool_level,
+                condition=record.condition,
                 has_weights=len(record.weights) > 0,
                 has_medications=len(record.medications) > 0,
                 has_vet_visits=len(record.vet_visits) > 0,
@@ -73,11 +70,8 @@ def create_record(
         record = Record(
             pet_id=pet_id,
             recorded_on=record_data.recorded_on,
-            title=record_data.title,
-            condition_level=record_data.condition_level,
-            appetite_level=record_data.appetite_level,
-            stool_level=record_data.stool_level,
-            memo=record_data.memo,
+            condition=record_data.condition,
+            note=record_data.note,
         )
         db.add(record)
         db.flush()
@@ -86,8 +80,8 @@ def create_record(
         for weight_data in record_data.weights:
             weight = RecordWeight(
                 record_id=record.id,
+                measured_on=weight_data.measured_on,
                 weight_kg=weight_data.weight_kg,
-                measured_at=weight_data.measured_at,
                 note=weight_data.note,
             )
             db.add(weight)
@@ -99,8 +93,8 @@ def create_record(
                 name=med_data.name,
                 dosage=med_data.dosage,
                 frequency=med_data.frequency,
-                started_on=med_data.started_on,
-                ended_on=med_data.ended_on,
+                start_on=med_data.start_on,
+                end_on=med_data.end_on,
                 note=med_data.note,
             )
             db.add(medication)
@@ -109,9 +103,10 @@ def create_record(
         for visit_data in record_data.vet_visits:
             visit = RecordVetVisit(
                 record_id=record.id,
+                visited_on=visit_data.visited_on,
                 hospital_name=visit_data.hospital_name,
-                doctor=visit_data.doctor,
-                reason=visit_data.reason,
+                doctor_name=visit_data.doctor_name,
+                chief_complaint=visit_data.chief_complaint,
                 diagnosis=visit_data.diagnosis,
                 cost_yen=visit_data.cost_yen,
                 note=visit_data.note,
@@ -169,11 +164,8 @@ def update_record(
     try:
         # Update parent record
         record.recorded_on = record_data.recorded_on
-        record.title = record_data.title
-        record.condition_level = record_data.condition_level
-        record.appetite_level = record_data.appetite_level
-        record.stool_level = record_data.stool_level
-        record.memo = record_data.memo
+        record.condition = record_data.condition
+        record.note = record_data.note
 
         # Update weights (replacement strategy)
         existing_weight_ids = {w.id for w in record.weights}
@@ -191,15 +183,15 @@ def update_record(
                 weight = (
                     db.query(RecordWeight).filter(RecordWeight.id == weight_data.id).first()
                 )
+                weight.measured_on = weight_data.measured_on
                 weight.weight_kg = weight_data.weight_kg
-                weight.measured_at = weight_data.measured_at
                 weight.note = weight_data.note
             else:
                 # Create new
                 weight = RecordWeight(
                     record_id=record.id,
+                    measured_on=weight_data.measured_on,
                     weight_kg=weight_data.weight_kg,
-                    measured_at=weight_data.measured_at,
                     note=weight_data.note,
                 )
                 db.add(weight)
@@ -222,8 +214,8 @@ def update_record(
                 medication.name = med_data.name
                 medication.dosage = med_data.dosage
                 medication.frequency = med_data.frequency
-                medication.started_on = med_data.started_on
-                medication.ended_on = med_data.ended_on
+                medication.start_on = med_data.start_on
+                medication.end_on = med_data.end_on
                 medication.note = med_data.note
             else:
                 medication = RecordMedication(
@@ -231,8 +223,8 @@ def update_record(
                     name=med_data.name,
                     dosage=med_data.dosage,
                     frequency=med_data.frequency,
-                    started_on=med_data.started_on,
-                    ended_on=med_data.ended_on,
+                    start_on=med_data.start_on,
+                    end_on=med_data.end_on,
                     note=med_data.note,
                 )
                 db.add(medication)
@@ -252,18 +244,20 @@ def update_record(
                     .filter(RecordVetVisit.id == visit_data.id)
                     .first()
                 )
+                visit.visited_on = visit_data.visited_on
                 visit.hospital_name = visit_data.hospital_name
-                visit.doctor = visit_data.doctor
-                visit.reason = visit_data.reason
+                visit.doctor_name = visit_data.doctor_name
+                visit.chief_complaint = visit_data.chief_complaint
                 visit.diagnosis = visit_data.diagnosis
                 visit.cost_yen = visit_data.cost_yen
                 visit.note = visit_data.note
             else:
                 visit = RecordVetVisit(
                     record_id=record.id,
+                    visited_on=visit_data.visited_on,
                     hospital_name=visit_data.hospital_name,
-                    doctor=visit_data.doctor,
-                    reason=visit_data.reason,
+                    doctor_name=visit_data.doctor_name,
+                    chief_complaint=visit_data.chief_complaint,
                     diagnosis=visit_data.diagnosis,
                     cost_yen=visit_data.cost_yen,
                     note=visit_data.note,

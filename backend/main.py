@@ -5,7 +5,7 @@ from sqlalchemy import text
 from contextlib import asynccontextmanager
 
 from database import engine, init_db
-from routes import pets, records
+from routes import pets, records, vet_visits, weights, medications
 
 
 @asynccontextmanager
@@ -31,6 +31,9 @@ app.add_middleware(
 # Include routers
 app.include_router(pets.router, prefix="/api")
 app.include_router(records.router, prefix="/api")
+app.include_router(vet_visits.router, prefix="/api")
+app.include_router(weights.router, prefix="/api")
+app.include_router(medications.router, prefix="/api")
 
 
 @app.get("/api/health")

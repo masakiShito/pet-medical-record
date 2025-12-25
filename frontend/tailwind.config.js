@@ -7,18 +7,18 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Primary color (医療・ヘルスケア系の信頼感ある青)
+        // Primary color (やさしいグリーンベース)
         primary: {
-          50: '#eff6ff',
-          100: '#dbeafe',
-          200: '#bfdbfe',
-          300: '#93c5fd',
-          400: '#60a5fa',
-          500: '#3b82f6',
-          600: '#2563eb',
-          700: '#1d4ed8',
-          800: '#1e40af',
-          900: '#1e3a8a',
+          50: '#f2fbf4',
+          100: '#e0f7e6',
+          200: '#c3efd0',
+          300: '#97e2b2',
+          400: '#6ccf91',
+          500: '#4ab874',
+          600: '#379a5f',
+          700: '#2b7a4c',
+          800: '#245f3d',
+          900: '#1d4a31',
         },
         // Success color (健康・ポジティブな明るい緑)
         success: {

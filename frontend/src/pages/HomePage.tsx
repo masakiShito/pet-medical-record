@@ -103,12 +103,12 @@ export default function HomePage() {
 
                 {todayRecord ? (
                   <div className="mb-5">
-                    <p className="text-sm text-primary-600 font-medium mb-2">
+                    <p className="text-sm text-success-600 font-medium mb-2">
                       ✓ 今日の記録済み
                     </p>
                     <Link
                       to={`/pets/${pet.id}/records/${todayRecord.id}`}
-                      className="text-sm text-primary-600 hover:text-primary-700 transition-colors duration-150"
+                      className="text-sm text-success-600 hover:text-success-700 transition-colors duration-150"
                     >
                       記録を見る
                     </Link>

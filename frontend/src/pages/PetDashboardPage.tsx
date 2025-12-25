@@ -244,6 +244,11 @@ export default function PetDashboardPage() {
                 履歴を見る
               </Button>
             </Link>
+            <Link to={`/pets/${pet.id}/history/pdf`}>
+              <Button variant="secondary" className="w-full text-sm">
+                病気・通院履歴をPDF出力
+              </Button>
+            </Link>
             <Link to={`/pets/${pet.id}/records/new`}>
               <Button variant="secondary" className="w-full text-sm">
                 まとめて記録（任意）

@@ -38,15 +38,15 @@ export default function PetDetailPage() {
 
   if (loading) {
     return (
-      <div className="text-center py-8">
-        <p className="text-gray-600">読み込み中...</p>
+      <div className="text-center py-12">
+        <p className="text-neutral-600">読み込み中...</p>
       </div>
     );
   }
 
   if (error || !pet) {
     return (
-      <div className="text-center py-8">
+      <div className="text-center py-12">
         <p className="text-red-600">エラー: {error || 'ペットが見つかりません'}</p>
       </div>
     );
@@ -54,24 +54,24 @@ export default function PetDetailPage() {
 
   return (
     <div>
-      <div className="mb-6">
+      <div className="mb-8">
         <button
           onClick={() => navigate(-1)}
-          className="text-blue-600 hover:underline mb-4"
+          className="text-primary-600 hover:text-primary-700 transition-colors duration-150 mb-6 inline-flex items-center"
         >
           ← 戻る
         </button>
 
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex justify-between items-start mb-4">
-            <div>
-              <h2 className="text-3xl font-bold text-gray-900 mb-2">
+        <div className="bg-white rounded-xl shadow-soft p-6 md:p-8">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
+            <div className="flex-1">
+              <h2 className="text-3xl font-bold text-neutral-900 mb-4">
                 {pet.name}
               </h2>
-              <dl className="space-y-1 text-sm">
+              <dl className="space-y-2 text-sm">
                 <div>
-                  <dt className="inline text-gray-600">種別: </dt>
-                  <dd className="inline text-gray-900">
+                  <dt className="inline text-neutral-600">種別: </dt>
+                  <dd className="inline text-neutral-900 font-medium">
                     {pet.species === 'dog' && '犬'}
                     {pet.species === 'cat' && '猫'}
                     {pet.species === 'other' && 'その他'}
@@ -79,14 +79,14 @@ export default function PetDetailPage() {
                 </div>
                 {pet.breed && (
                   <div>
-                    <dt className="inline text-gray-600">品種: </dt>
-                    <dd className="inline text-gray-900">{pet.breed}</dd>
+                    <dt className="inline text-neutral-600">品種: </dt>
+                    <dd className="inline text-neutral-900 font-medium">{pet.breed}</dd>
                   </div>
                 )}
                 {pet.sex && (
                   <div>
-                    <dt className="inline text-gray-600">性別: </dt>
-                    <dd className="inline text-gray-900">
+                    <dt className="inline text-neutral-600">性別: </dt>
+                    <dd className="inline text-neutral-900 font-medium">
                       {pet.sex === 'male' && 'オス'}
                       {pet.sex === 'female' && 'メス'}
                       {pet.sex === 'unknown' && '不明'}
@@ -95,15 +95,15 @@ export default function PetDetailPage() {
                 )}
                 {pet.birthday && (
                   <div>
-                    <dt className="inline text-gray-600">誕生日: </dt>
-                    <dd className="inline text-gray-900">
+                    <dt className="inline text-neutral-600">誕生日: </dt>
+                    <dd className="inline text-neutral-900 font-medium">
                       {formatDate(pet.birthday)}
                     </dd>
                   </div>
                 )}
               </dl>
               {pet.notes && (
-                <p className="mt-3 text-sm text-gray-700">{pet.notes}</p>
+                <p className="mt-4 text-sm text-neutral-700">{pet.notes}</p>
               )}
             </div>
             <Link to={`/pets/${petId}/edit`}>
@@ -113,10 +113,10 @@ export default function PetDetailPage() {
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow">
-        <div className="p-6 border-b">
-          <div className="flex justify-between items-center">
-            <h3 className="text-xl font-semibold text-gray-900">
+      <div className="bg-white rounded-xl shadow-soft">
+        <div className="p-6 md:p-8 border-b border-neutral-200">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+            <h3 className="text-2xl font-bold text-neutral-900">
               カルテ (記録一覧)
             </h3>
             <Link to={`/pets/${petId}/records/new`}>
@@ -125,10 +125,10 @@ export default function PetDetailPage() {
           </div>
         </div>
 
-        <div className="p-6">
+        <div className="p-6 md:p-8">
           {records.length === 0 ? (
-            <div className="text-center py-8">
-              <p className="text-gray-600 mb-4">まだ記録がありません</p>
+            <div className="text-center py-12">
+              <p className="text-neutral-600 mb-6 text-lg">まだ記録がありません</p>
               <Link to={`/pets/${petId}/records/new`}>
                 <Button>最初の記録を追加する</Button>
               </Link>
@@ -139,30 +139,30 @@ export default function PetDetailPage() {
                 <Link
                   key={record.id}
                   to={`/pets/${petId}/records/${record.id}`}
-                  className="block border rounded-lg p-4 hover:bg-gray-50 transition"
+                  className="block border border-neutral-200 rounded-xl p-5 md:p-6 hover:bg-neutral-50 hover:border-neutral-300 transition-all duration-150"
                 >
-                  <div className="flex justify-between items-start mb-2">
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mb-3">
                     <div>
-                      <p className="font-semibold text-gray-900">
+                      <p className="font-semibold text-neutral-900 text-lg">
                         {formatDate(record.recorded_on)}
                       </p>
                       {record.title && (
-                        <p className="text-gray-700">{record.title}</p>
+                        <p className="text-neutral-700 mt-1">{record.title}</p>
                       )}
                     </div>
-                    <div className="flex space-x-2 text-xs">
+                    <div className="flex flex-wrap gap-2 text-xs">
                       {record.has_weights && (
-                        <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded">
+                        <span className="px-3 py-1.5 bg-primary-100 text-primary-800 rounded-lg font-medium">
                           体重
                         </span>
                       )}
                       {record.has_medications && (
-                        <span className="px-2 py-1 bg-green-100 text-green-800 rounded">
+                        <span className="px-3 py-1.5 bg-primary-100 text-primary-800 rounded-lg font-medium">
                           投薬
                         </span>
                       )}
                       {record.has_vet_visits && (
-                        <span className="px-2 py-1 bg-purple-100 text-purple-800 rounded">
+                        <span className="px-3 py-1.5 bg-primary-100 text-primary-800 rounded-lg font-medium">
                           通院
                         </span>
                       )}
@@ -171,7 +171,7 @@ export default function PetDetailPage() {
                   {(record.condition_level ||
                     record.appetite_level ||
                     record.stool_level) && (
-                    <div className="flex space-x-4 text-sm text-gray-600">
+                    <div className="flex flex-wrap gap-4 text-sm text-neutral-600">
                       {record.condition_level && (
                         <span>体調: {record.condition_level}/5</span>
                       )}

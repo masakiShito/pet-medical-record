@@ -224,28 +224,28 @@ export default function RecordFormPage() {
 
   if (loading && isEdit) {
     return (
-      <div className="text-center py-8">
-        <p className="text-gray-600">読み込み中...</p>
+      <div className="text-center py-12">
+        <p className="text-neutral-600">読み込み中...</p>
       </div>
     );
   }
 
   return (
     <div className="max-w-4xl mx-auto">
-      <h2 className="text-2xl font-bold text-gray-900 mb-6">
+      <h2 className="text-3xl font-bold text-neutral-900 mb-8">
         {isEdit ? '記録を編集' : '新しい記録を追加'}
       </h2>
 
       {error && (
-        <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-md">
-          <p className="text-red-600">{error}</p>
+        <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+          <p className="text-red-700 font-medium">{error}</p>
         </div>
       )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Basic Info */}
-        <div className="bg-white shadow rounded-lg p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">基本情報</h3>
+        <div className="bg-white shadow-soft rounded-xl p-6 md:p-8">
+          <h3 className="text-xl font-bold text-neutral-900 mb-4">基本情報</h3>
 
           <Input
             label="記録日"
@@ -319,9 +319,9 @@ export default function RecordFormPage() {
         </div>
 
         {/* Weights */}
-        <div className="bg-white shadow rounded-lg p-6">
+        <div className="bg-white shadow-soft rounded-xl p-6 md:p-8">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-semibold text-gray-900">体重記録</h3>
+            <h3 className="text-xl font-bold text-neutral-900">体重記録</h3>
             <Button type="button" variant="secondary" onClick={addWeight}>
               追加
             </Button>
@@ -365,9 +365,9 @@ export default function RecordFormPage() {
         </div>
 
         {/* Medications */}
-        <div className="bg-white shadow rounded-lg p-6">
+        <div className="bg-white shadow-soft rounded-xl p-6 md:p-8">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-semibold text-gray-900">投薬記録</h3>
+            <h3 className="text-xl font-bold text-neutral-900">投薬記録</h3>
             <Button type="button" variant="secondary" onClick={addMedication}>
               追加
             </Button>
@@ -431,9 +431,9 @@ export default function RecordFormPage() {
         </div>
 
         {/* Vet Visits */}
-        <div className="bg-white shadow rounded-lg p-6">
+        <div className="bg-white shadow-soft rounded-xl p-6 md:p-8">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-semibold text-gray-900">通院記録</h3>
+            <h3 className="text-xl font-bold text-neutral-900">通院記録</h3>
             <Button type="button" variant="secondary" onClick={addVetVisit}>
               追加
             </Button>
@@ -493,31 +493,33 @@ export default function RecordFormPage() {
         </div>
 
         {/* Actions */}
-        <div className="flex justify-between">
-          <div>
-            {isEdit && (
+        <div className="bg-white shadow-soft rounded-xl p-6 md:p-8">
+          <div className="flex flex-col sm:flex-row sm:justify-between gap-4">
+            <div>
+              {isEdit && (
+                <Button
+                  type="button"
+                  variant="danger"
+                  onClick={handleDelete}
+                  disabled={loading}
+                >
+                  記録を削除
+                </Button>
+              )}
+            </div>
+            <div className="flex flex-col-reverse sm:flex-row gap-3">
               <Button
                 type="button"
-                variant="danger"
-                onClick={handleDelete}
+                variant="secondary"
+                onClick={() => navigate(-1)}
                 disabled={loading}
               >
-                記録を削除
+                キャンセル
               </Button>
-            )}
-          </div>
-          <div className="flex space-x-3">
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={() => navigate(-1)}
-              disabled={loading}
-            >
-              キャンセル
-            </Button>
-            <Button type="submit" disabled={loading}>
-              {loading ? '保存中...' : isEdit ? '更新する' : '登録する'}
-            </Button>
+              <Button type="submit" disabled={loading}>
+                {loading ? '保存中...' : isEdit ? '更新する' : '登録する'}
+              </Button>
+            </div>
           </div>
         </div>
       </form>

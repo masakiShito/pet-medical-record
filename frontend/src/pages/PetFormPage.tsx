@@ -94,25 +94,25 @@ export default function PetFormPage() {
 
   if (loading && isEdit) {
     return (
-      <div className="text-center py-8">
-        <p className="text-gray-600">読み込み中...</p>
+      <div className="text-center py-12">
+        <p className="text-neutral-600">読み込み中...</p>
       </div>
     );
   }
 
   return (
-    <div>
-      <h2 className="text-2xl font-bold text-gray-900 mb-6">
+    <div className="max-w-2xl mx-auto">
+      <h2 className="text-3xl font-bold text-neutral-900 mb-8">
         {isEdit ? 'ペット情報編集' : '新しいペットを登録'}
       </h2>
 
       {error && (
-        <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-md">
-          <p className="text-red-600">{error}</p>
+        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+          <p className="text-red-700 font-medium">{error}</p>
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="bg-white shadow rounded-lg p-6">
+      <form onSubmit={handleSubmit} className="bg-white shadow-soft rounded-xl p-6 md:p-8">
         <Input
           label="ペット名"
           name="name"
@@ -171,7 +171,7 @@ export default function PetFormPage() {
           placeholder="特記事項があれば入力してください"
         />
 
-        <div className="flex justify-end space-x-3">
+        <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 mt-8 pt-6 border-t border-neutral-200">
           <Button
             type="button"
             variant="secondary"

@@ -11,30 +11,30 @@ export default function Layout({ children }: LayoutProps) {
   const isActive = (path: string): boolean => location.pathname === path;
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow">
+    <div className="min-h-screen bg-neutral-50">
+      <header className="bg-white border-b border-neutral-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4">
-            <h1 className="text-2xl font-bold text-gray-900">
+          <div className="flex justify-between items-center py-5">
+            <h1 className="text-xl font-bold text-neutral-900">
               Pet Medical Record
             </h1>
-            <nav className="flex space-x-4">
+            <nav className="flex space-x-2">
               <Link
                 to="/"
-                className={`px-3 py-2 rounded-md text-sm font-medium ${
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-150 ${
                   isActive('/')
-                    ? 'bg-blue-500 text-white'
-                    : 'text-gray-700 hover:bg-gray-100'
+                    ? 'bg-primary-600 text-white shadow-soft'
+                    : 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900'
                 }`}
               >
                 ホーム
               </Link>
               <Link
                 to="/pets"
-                className={`px-3 py-2 rounded-md text-sm font-medium ${
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-150 ${
                   isActive('/pets')
-                    ? 'bg-blue-500 text-white'
-                    : 'text-gray-700 hover:bg-gray-100'
+                    ? 'bg-primary-600 text-white shadow-soft'
+                    : 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900'
                 }`}
               >
                 ペット一覧
@@ -44,7 +44,7 @@ export default function Layout({ children }: LayoutProps) {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
         {children}
       </main>
     </div>

@@ -47,15 +47,15 @@ export default function HomePage() {
 
   if (loading) {
     return (
-      <div className="text-center py-8">
-        <p className="text-gray-600">読み込み中...</p>
+      <div className="text-center py-12">
+        <p className="text-neutral-600">読み込み中...</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="text-center py-8">
+      <div className="text-center py-12">
         <p className="text-red-600">エラー: {error}</p>
       </div>
     );
@@ -63,11 +63,11 @@ export default function HomePage() {
 
   if (pets.length === 0) {
     return (
-      <div className="text-center py-12">
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">
+      <div className="text-center py-16">
+        <h2 className="text-3xl font-bold text-neutral-900 mb-4">
           ペットを登録してください
         </h2>
-        <p className="text-gray-600 mb-6">
+        <p className="text-neutral-600 mb-8 text-lg">
           まだペットが登録されていません。最初のペットを登録して記録を始めましょう。
         </p>
         <Link to="/pets/new">
@@ -79,22 +79,22 @@ export default function HomePage() {
 
   return (
     <div>
-      <div className="mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">
+      <div className="mb-12">
+        <h2 className="text-3xl font-bold text-neutral-900 mb-6">
           今日の記録
         </h2>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-6 md:gap-8 md:grid-cols-2 lg:grid-cols-3">
           {pets.map((pet) => {
             const todayRecord = (recentRecords[pet.id] || []).find(
               (r) => r.recorded_on === today
             );
 
             return (
-              <div key={pet.id} className="bg-white rounded-lg shadow p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              <div key={pet.id} className="bg-white rounded-xl shadow-soft p-6 md:p-8 transition-all duration-150 hover:shadow-soft-md">
+                <h3 className="text-xl font-semibold text-neutral-900 mb-2">
                   {pet.name}
                 </h3>
-                <p className="text-sm text-gray-600 mb-4">
+                <p className="text-sm text-neutral-600 mb-5">
                   {pet.species === 'dog' && '犬'}
                   {pet.species === 'cat' && '猫'}
                   {pet.species === 'other' && 'その他'}
@@ -102,20 +102,20 @@ export default function HomePage() {
                 </p>
 
                 {todayRecord ? (
-                  <div className="mb-4">
-                    <p className="text-sm text-green-600 font-medium mb-2">
+                  <div className="mb-5">
+                    <p className="text-sm text-primary-600 font-medium mb-2">
                       ✓ 今日の記録済み
                     </p>
                     <Link
                       to={`/pets/${pet.id}/records/${todayRecord.id}`}
-                      className="text-sm text-blue-600 hover:underline"
+                      className="text-sm text-primary-600 hover:text-primary-700 transition-colors duration-150"
                     >
                       記録を見る
                     </Link>
                   </div>
                 ) : (
-                  <div className="mb-4">
-                    <p className="text-sm text-gray-500 mb-2">
+                  <div className="mb-5">
+                    <p className="text-sm text-neutral-500 mb-3">
                       今日の記録はまだありません
                     </p>
                     <Link to={`/pets/${pet.id}/records/new`}>
@@ -128,7 +128,7 @@ export default function HomePage() {
 
                 <Link
                   to={`/pets/${pet.id}`}
-                  className="text-sm text-blue-600 hover:underline"
+                  className="text-sm text-primary-600 hover:text-primary-700 transition-colors duration-150"
                 >
                   カルテを見る →
                 </Link>
@@ -139,34 +139,34 @@ export default function HomePage() {
       </div>
 
       <div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">
+        <h2 className="text-3xl font-bold text-neutral-900 mb-6">
           最近の記録
         </h2>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-6 md:gap-8 md:grid-cols-2 lg:grid-cols-3">
           {pets.map((pet) => {
             const records = recentRecords[pet.id] || [];
 
             return (
-              <div key={pet.id} className="bg-white rounded-lg shadow p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              <div key={pet.id} className="bg-white rounded-xl shadow-soft p-6 md:p-8 transition-all duration-150 hover:shadow-soft-md">
+                <h3 className="text-xl font-semibold text-neutral-900 mb-5">
                   {pet.name}
                 </h3>
 
                 {records.length === 0 ? (
-                  <p className="text-sm text-gray-500">記録がありません</p>
+                  <p className="text-sm text-neutral-500">記録がありません</p>
                 ) : (
-                  <ul className="space-y-2">
+                  <ul className="space-y-3">
                     {records.slice(0, 3).map((record) => (
                       <li key={record.id}>
                         <Link
                           to={`/pets/${pet.id}/records/${record.id}`}
-                          className="block text-sm hover:bg-gray-50 p-2 rounded"
+                          className="block text-sm hover:bg-neutral-50 p-3 rounded-lg transition-colors duration-150"
                         >
-                          <div className="font-medium text-gray-900">
+                          <div className="font-medium text-neutral-900">
                             {formatDate(record.recorded_on)}
                           </div>
                           {record.title && (
-                            <div className="text-gray-600">{record.title}</div>
+                            <div className="text-neutral-600 mt-1">{record.title}</div>
                           )}
                         </Link>
                       </li>

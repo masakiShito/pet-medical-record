@@ -14,6 +14,7 @@ import WeightListPage from './pages/WeightListPage';
 import WeightFormPage from './pages/WeightFormPage';
 import MedicationListPage from './pages/MedicationListPage';
 import MedicationFormPage from './pages/MedicationFormPage';
+import MedicalHistoryPdfPage from './pages/MedicalHistoryPdfPage';
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
 
           {/* S05: 履歴タイムライン */}
           <Route path="/pets/:petId/history" element={<RecordTimelinePage />} />
+          <Route path="/pets/:petId/history/pdf" element={<MedicalHistoryPdfPage />} />
 
           {/* S06: 記録詳細 */}
           <Route path="/pets/:petId/records/:recordId" element={<RecordDetailPage />} />
